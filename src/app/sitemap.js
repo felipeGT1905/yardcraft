@@ -1,20 +1,20 @@
 import { getSiteUrl } from "@/lib/site";
-import { designs } from "@/content/designs";
+import { getDesignPublicPath } from "@/lib/designSlug";
+import { listDesigns } from "@/lib/designs";
 
-export default function sitemap() {
+export default async function sitemap() {
   const url = getSiteUrl();
   const now = new Date();
+  const designs = await listDesigns();
 
   return [
     { url: `${url}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
-    { url: `${url}/design`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${url}/admin`, lastModified: now, changeFrequency: "monthly", priority: 0.2 },
     ...designs.map((d) => ({
-      url: `${url}/design/${d.slug}`,
-      lastModified: now,
+      url: `${url}${getDesignPublicPath(d.slug)}`,
+      lastModified: d.updated_at ? new Date(d.updated_at) : now,
       changeFrequency: "weekly",
-      priority: 0.6,
+      priority: 0.8,
     })),
   ];
 }
-

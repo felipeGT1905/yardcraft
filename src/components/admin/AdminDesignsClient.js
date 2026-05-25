@@ -13,6 +13,7 @@ import { dedupeDesignsByNumber } from "@/lib/designSlug";
 import {
   formatDesignNumber,
   getDesignNumber,
+  getDesignPublicPath,
   getNextDesignSlug,
   isValidDesignSlug,
   resolveDesignSlug,
@@ -242,7 +243,10 @@ export function AdminDesignsClient({ initialDesigns }) {
   }, [designs, selectedSlug]);
 
   const selectedStatus = useMemo(() => computeStatus(selected), [selected]);
-  const publicUrl = useMemo(() => (selected?.slug ? `/design/${selected.slug}` : ""), [selected]);
+  const publicUrl = useMemo(
+    () => (selected?.slug ? getDesignPublicPath(selected.slug) : ""),
+    [selected],
+  );
 
   const activeUploadKey = selected?.slug
     ? [`before:${resolveDesignSlug(selected.slug)}`, `after:${resolveDesignSlug(selected.slug)}`].find(

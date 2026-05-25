@@ -1,13 +1,27 @@
-/** Property slugs are numeric ids only: design1, design28, design003 — no text names */
+/** Property slugs: dmv0001, dmv0002 — legacy design1/design28 still resolve for migration */
 
-export const DESIGN_SLUG_PREFIX = "design";
+export const DESIGN_SLUG_PREFIX = "dmv";
+export const DESIGN_SLUG_PAD = 4;
+const LEGACY_PREFIX = "design";
 
-const NUMERIC_SLUG_RE = /^design\d+$/i;
+const DMV_SLUG_RE = /^dmv\d+$/i;
+const LEGACY_SLUG_RE = /^design\d+$/i;
 
 export function getDesignNumber(slug) {
-  const canonical = canonicalDesignSlug(slug);
-  if (!canonical) return null;
-  return Number.parseInt(canonical.slice(DESIGN_SLUG_PREFIX.length), 10);
+  const s = typeof slug === "string" ? slug.trim().toLowerCase() : "";
+  if (!s) return null;
+
+  if (DMV_SLUG_RE.test(s)) {
+    const n = Number.parseInt(s.slice(DESIGN_SLUG_PREFIX.length), 10);
+    return Number.isFinite(n) && n >= 1 ? n : null;
+  }
+
+  if (LEGACY_SLUG_RE.test(s)) {
+    const n = Number.parseInt(s.slice(LEGACY_PREFIX.length), 10);
+    return Number.isFinite(n) && n >= 1 ? n : null;
+  }
+
+  return null;
 }
 
 /** Display label: "1", "2", "3" — never the full slug string */
@@ -17,28 +31,31 @@ export function formatDesignNumber(slug) {
 }
 
 export function isValidDesignSlug(slug) {
-  const s = typeof slug === "string" ? slug.trim() : "";
-  return NUMERIC_SLUG_RE.test(s);
+  return getDesignNumber(slug) != null;
 }
 
-/** Lowercase canonical slug without zero-padding: design9, design28 */
+/** Canonical DB/public slug: dmv0001, dmv0028 */
 export function canonicalDesignSlug(slug) {
-  const s = typeof slug === "string" ? slug.trim().toLowerCase() : "";
-  if (!NUMERIC_SLUG_RE.test(s)) return null;
-  const n = Number.parseInt(s.slice(DESIGN_SLUG_PREFIX.length), 10);
-  if (!Number.isFinite(n) || n < 1) return null;
-  return `${DESIGN_SLUG_PREFIX}${n}`;
+  const n = getDesignNumber(slug);
+  if (n == null || n < 1) return null;
+  return `${DESIGN_SLUG_PREFIX}${String(n).padStart(DESIGN_SLUG_PAD, "0")}`;
 }
 
-/** Accepts design28 or bare number "28" for URLs / search */
+/** Public URL path for a property (e.g. /dmv0001) */
+export function getDesignPublicPath(slug) {
+  const canonical = canonicalDesignSlug(slug);
+  return canonical ? `/${canonical}` : "";
+}
+
+/** Accepts dmv0001, design28, bare number "28" or "0001" */
 export function resolveDesignSlug(input) {
   const s = typeof input === "string" ? input.trim() : "";
   if (!s) return null;
-  if (/^\d+$/.test(s)) return `${DESIGN_SLUG_PREFIX}${s}`;
+  if (/^\d+$/.test(s)) return canonicalDesignSlug(s);
   return canonicalDesignSlug(s);
 }
 
-/** Next sequential slug (e.g. design27 → design28) — always unpadded */
+/** Next sequential slug (e.g. dmv0027 → dmv0028) */
 export function getNextDesignSlug(designs) {
   const slugs = (Array.isArray(designs) ? designs : [])
     .map((d) => (typeof d === "string" ? d : d?.slug))
@@ -50,7 +67,7 @@ export function getNextDesignSlug(designs) {
     if (n != null && n > maxNum) maxNum = n;
   }
 
-  return `${DESIGN_SLUG_PREFIX}${maxNum + 1}`;
+  return `${DESIGN_SLUG_PREFIX}${String(maxNum + 1).padStart(DESIGN_SLUG_PAD, "0")}`;
 }
 
 function designScore(d) {
@@ -71,7 +88,7 @@ function pickPreferredDesign(a, b) {
   return designTimestamp(a) >= designTimestamp(b) ? a : b;
 }
 
-/** Collapse legacy padded slugs (design009) to one row per property number. */
+/** Collapse legacy slugs (design009, dmv0009) to one row per property number. */
 export function dedupeDesignsByNumber(designs) {
   const byNum = new Map();
   for (const d of designs) {
@@ -87,7 +104,7 @@ export function assertValidDesignSlug(slug) {
   const canonical = canonicalDesignSlug(slug);
   if (!canonical) {
     throw new Error(
-      "Slug must be a numeric design id (e.g. design28). Text names are not allowed.",
+      "Slug must be a numeric property id (e.g. dmv0001). Text names are not allowed.",
     );
   }
   return canonical;
