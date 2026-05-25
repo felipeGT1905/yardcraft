@@ -1,0 +1,227 @@
+@import "tailwindcss";
+
+:root {
+  --background: #050506;
+  --foreground: #f6f2ea;
+  --muted: #b9b2a6;
+  --font-ui-sans: var(--font-yc-sans), ui-sans-serif, system-ui, sans-serif;
+  --card: rgba(255, 255, 255, 0.04);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --gold: #d6b25e;
+  --green: #1f7a3a;
+  --green-bright: #a7ef3a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-card: var(--card);
+  --color-card-border: var(--card-border);
+  --color-gold: var(--gold);
+  --color-green: var(--green);
+  --color-green-bright: var(--green-bright);
+  --font-sans: var(--font-ui-sans);
+  --font-serif: var(--font-yc-serif);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-ui-sans);
+}
+
+/* Design landing: editorial contrast — readable body, calm vertical rhythm */
+.design-landing {
+  --muted: #d8d1c4;
+  --color-muted: var(--muted);
+  font-feature-settings: "kern" 1, "liga" 1;
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .design-landing {
+    --muted: #e6dfd4;
+    --color-muted: var(--muted);
+  }
+}
+
+.design-landing .font-serif {
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lux-rotate-hint {
+    animation: none !important;
+  }
+}
+
+@keyframes lux-rotate-hint-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.lux-rotate-hint {
+  animation: lux-rotate-hint-in 0.85s ease-out forwards;
+}
+
+.touch-pinch-pan {
+  touch-action: pinch-zoom pan-x pan-y;
+}
+
+/* Large embeds / hero media: let the browser handle vertical scroll; pointer events still reach children. */
+.touch-pan-y-safe {
+  touch-action: pan-y;
+}
+
+/* Header wordmark — Yard: solid green; Craft: green top / gold bottom split */
+.yc-header-wordmark-yard {
+  color: color-mix(in oklab, var(--green-bright) 24%, var(--green));
+}
+
+.yc-header-wordmark {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--green-bright) 28%, var(--green)) 0%,
+    color-mix(in oklab, var(--green-bright) 28%, var(--green)) 48%,
+    var(--gold) 52%,
+    color-mix(in oklab, var(--gold) 72%, #e09a3a) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.yc-header-tagline {
+  color: #fff;
+  letter-spacing: 0.01em;
+}
+
+/* Site-wide luxury photo treatment — marketing/stock imagery only (never uploaded client assets) */
+.yc-lux-photo {
+  filter: brightness(1.04) contrast(1.16) saturate(1.34) hue-rotate(-3deg);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Uploaded before/after assets — zero filters, grading, or blend effects */
+.yc-uploaded-photo {
+  filter: none;
+  mix-blend-mode: normal;
+  opacity: 1;
+  -webkit-backface-visibility: visible;
+  backface-visibility: visible;
+}
+
+.yc-lux-photo-warmth {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklab, var(--gold) 38%, transparent) 0%,
+    transparent 38%,
+    color-mix(in oklab, #c4893a 12%, transparent) 100%
+  );
+  mix-blend-mode: overlay;
+  opacity: 0.42;
+}
+
+/* Homepage hero — cooler / less saturated than site-wide lux treatment */
+.yc-lux-photo-hero {
+  filter: brightness(1.02) contrast(1.14) saturate(1.08) hue-rotate(5deg);
+}
+
+.yc-lux-photo-warmth-hero {
+  opacity: 0.14;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--gold) 35%, transparent);
+}
+
+@keyframes lux-pan {
+  0% {
+    transform: translate3d(-6%, -2%, 0) scale(1.02);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate3d(5%, 1%, 0) scale(1.05);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate3d(-6%, -2%, 0) scale(1.02);
+    opacity: 0.55;
+  }
+}
+
+@keyframes lux-float {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.lux-animated-overlay {
+  animation: lux-pan 18s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.lux-float {
+  animation: lux-float 6.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lux-animated-overlay,
+  .lux-float {
+    animation: none !important;
+  }
+}
+
+/* Premium scrollbar (scoped via class) */
+.lux-scrollbar {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: color-mix(in oklab, var(--gold) 55%, var(--green)) rgba(255, 255, 255, 0.06);
+}
+
+.lux-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.lux-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+}
+
+.lux-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--gold) 58%, rgba(255, 255, 255, 0.18)),
+    color-mix(in oklab, var(--green) 40%, rgba(0, 0, 0, 0.25))
+  );
+  border-radius: 999px;
+  border: 2px solid rgba(0, 0, 0, 0.35);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 14px 30px -20px rgba(214, 178, 94, 0.45);
+}
+
+.lux-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--gold) 66%, rgba(255, 255, 255, 0.22)),
+    color-mix(in oklab, var(--green) 46%, rgba(0, 0, 0, 0.25))
+  );
+}
