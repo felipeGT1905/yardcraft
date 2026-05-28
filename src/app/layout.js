@@ -25,6 +25,10 @@ export const metadata = {
   },
   description: `${BRAND.tagline}. Luxury landscaping and outdoor living transformations across Northern Virginia.`,
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  icons: {
+    icon: [{ url: "/icon.png", type: "image/png" }],
+    apple: [{ url: "/apple-icon.png", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({ children }) {
