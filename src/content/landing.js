@@ -90,7 +90,8 @@ export const landingContent = {
       id: "reviews",
       label: "REVIEWS",
       title: "Trusted by homeowners\nacross Northern Virginia.",
-      googleMapsUrl: "https://maps.app.goo.gl/EqftrXDWDv6ejHjN8",
+      googleMapsUrl:
+        "https://www.google.com/maps/place/YardCraft/@38.9210323,-77.5133646,11z/data=!4m18!1m9!3m8!1s0x89b7b7245ae0c827:0x1cf8fa7c6cd458b!2sYardCraft!8m2!3d38.921447!4d-77.201547!9m1!1b1!16s%2Fg%2F11rt_x51sq!3m7!1s0x89b7b7245ae0c827:0x1cf8fa7c6cd458b!8m2!3d38.921447!4d-77.201547!9m1!1b1!16s%2Fg%2F11rt_x51sq?entry=ttu&g_ep=EgoyMDI2MDUyNy4wIKXMDSoASAFQAw%3D%3D",
       items: [
         {
           name: "Doris Benavides",
