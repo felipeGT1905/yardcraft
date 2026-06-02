@@ -3,6 +3,7 @@
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
+import { GoogleReviewCard } from "@/components/reviews/GoogleReviewCard";
 
 const GOOGLE_MAPS_URL =
   "https://www.google.com/maps/place/YardCraft/@38.9210323,-77.5133646,11z/data=!4m18!1m9!3m8!1s0x89b7b7245ae0c827:0x1cf8fa7c6cd458b!2sYardCraft!8m2!3d38.921447!4d-77.201547!9m1!1b1!16s%2Fg%2F11rt_x51sq!3m7!1s0x89b7b7245ae0c827:0x1cf8fa7c6cd458b!8m2!3d38.921447!4d-77.201547!9m1!1b1!16s%2Fg%2F11rt_x51sq?entry=ttu&g_ep=EgoyMDI2MDUyNy4wIKXMDSoASAFQAw%3D%3D";
@@ -12,10 +13,55 @@ const MAX_GOOGLE_REVIEWS = 3;
 // stars + author even if text is absent. Only the first MAX_GOOGLE_REVIEWS are shown.
 const REVIEWS = [
   {
-    text: "",
-    author: "Doris Benavides",
-    location: "Northern Virginia",
-    rating: 5,
+    name: "Anne farrell",
+    meta: "4 photos",
+    stars: 5,
+    timeAgo: "9 hours ago",
+    badge: "New",
+    body:
+      "I have been using Javier's business for my yard clean up and maintenance for several years. I have always had a great experience. My yard always looks fantastic when they are finished. They have always been easy to work with and responsive to any questions or concerns. I highly recommend them!",
+    avatarUrl:
+      "https://lh3.googleusercontent.com/a-/ALV-UjVSPrvfubXpMSaVTENZFmzxiG6FhZ3vP9rigI2hbDc0yqA5Pz4=w45-h45-p-rp-mo-br100",
+    photos: [
+      "https://lh3.googleusercontent.com/grass-cs/ANxoTn3vXQK84kvo5YWtdotHeXeYRvV21pBur4sMIjCnAc84zdeDmqNE0qviyFny7Kbaw2r0tgOEEh6qHU7RsVMHuqeQbn4RMIhY8HhmzbuJdlI2a0RSUBnt9djbZYj8_hCZWgijb7K1svX-srsa=w375-h281-p-k-no",
+      "https://lh3.googleusercontent.com/grass-cs/ANxoTn0Qc4IarfEzhBZ5Ft8qIJEb3ul-7YqS-J9EYs8gt1E2J7EVJQz9gGU0E3ZYA1gp_LC4Yv9sXhZCjvZUL-K35RyKj0939cmCSDiRQXL9RYKJGmekbyGsv7FMpMDImHf5KVatj053HmYESKY=w375-h281-p-k-no",
+      "https://lh3.googleusercontent.com/grass-cs/ANxoTn2yLoLB4HpTlQsDoKmnEqImXEi4Mm8AnkdmN7vaAexlxXk_gWtTrdg0fkKiCFUhATQ2y9pZ0Ogj2qAx14qxjvz6T9Rv6mOAShhAoDtCuO2Kji1yChn4qlHS1RcN_jj4zyyFZnijCRVI2us=w375-h281-p-k-no",
+      "https://lh3.googleusercontent.com/grass-cs/ANxoTn1qii-euXda3u5rIq-7-V7AAon_KM6_cxaXvWxRxqlXDyPOcE-Pf2w-RnqS3swuU7NX2K1bYuThlOeBbA2TaDoDEUt6UkF9uLOAN73nTm3xwoBqHJI6KBlrhE7on1Qieq5eFIFMxivG8nZg=w375-h281-p-k-no",
+    ],
+  },
+  {
+    name: "Will Cullin",
+    meta: "8 reviews · 1 photo",
+    stars: 5,
+    timeAgo: "5 days ago",
+    badge: "New",
+    body:
+      "We have trusted Javier and his crew for many years now. They do excellent work from routine trimming to full landscaping projects. They have planted and removed trees and shrubs for us, laid down a new path, and fully redid our front bed with retaining wall and plants. 10/10 work!",
+    avatarUrl:
+      "https://lh3.googleusercontent.com/a/ACg8ocIA6HLD9-WfJUkt6s-KAo5zx3ngG2K-eRLIURfl9Svj8ad6xQ=w45-h45-p-rp-mo-br100",
+    photos: [
+      "https://lh3.googleusercontent.com/grass-cs/ANxoTn0t9vF-04vMwPBb3EOhrs1bSFef25vpYD-zdg-8WvnDCETMnxXCVdG6XqDAqLgSLZnHVqktPHKYeo4yxcGLLEYTA1n1QeTIQinwBFH6XPaRGIQdnkgoqIEqJdaYxvJkpIO0BGlNJW1sM2oz=w750-h563-p-k-no",
+    ],
+  },
+  {
+    name: "Dianna Rodriguez",
+    meta: "7 reviews · 1 photo",
+    stars: 5,
+    timeAgo: "6 days ago",
+    badge: "New",
+    body:
+      "Javier and his crew have done many projects for us including new sod, irrigation, stone patios, and regular maintenance of our flower beds. They make sure to always tell me exactly what in need to do to keep it looking great based on the season and weather. I highly recommend them!",
+    avatarUrl:
+      "https://lh3.googleusercontent.com/a/ACg8ocLHvXwVjOCVVE5_qnctc6y6LaDQe-mjKOz4hAmyaFw2nx7yfA=w45-h45-p-rp-mo-br100",
+    photos: [
+      "https://lh3.googleusercontent.com/grass-cs/ANxoTn3fn8S8LXhEODDy97kOBq9FVWh13CcapJ0pbmdTlse_MHTc5r62al_jKAwEHZz8vK-JinnRCaFIHZnUHIrDAg-uYaCMd1bfPJUp3kYaeDJvKUo9rvJ-PkUEOzcNvoBUwFqz12xYHdkM1GaI=w750-h563-p-k-no",
+    ],
+  },
+  {
+    name: "Doris Benavides",
+    meta: "Northern Virginia",
+    stars: 5,
+    body: "",
   },
 ];
 
@@ -24,20 +70,35 @@ export function TrustSection() {
   const hasReviews = displayedReviews.length > 0;
 
   return (
-    <section id="trust" className="scroll-mt-24 py-28 sm:py-36">
+    <section id="trust" className="relative scroll-mt-24 py-28 sm:py-36">
+      {/* Cinematic ambient glows */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute left-1/2 top-[-240px] h-[540px] w-[980px] -translate-x-1/2 rounded-full bg-gold/10 blur-[90px]" />
+        <div className="absolute right-[-260px] bottom-[-240px] h-[540px] w-[540px] rounded-full bg-green/10 blur-[90px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(900px_520px_at_50%_0%,rgba(255,255,255,0.06),transparent_62%)]" />
+      </div>
       <Container>
-        <div className="relative overflow-hidden rounded-2xl border border-white/6 bg-black/40 p-6 sm:rounded-[22px] sm:p-8 lg:p-10">
+        <div className="relative overflow-hidden rounded-[26px] border border-white/10 bg-black/35 p-6 shadow-[0_40px_120px_-86px_rgba(0,0,0,0.95)] sm:p-8 lg:p-10">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),transparent_48%)]"
+          />
 
           {/* Header */}
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between lg:gap-8">
             <div className="relative">
               <Reveal
                 as="h2"
-                className="font-serif text-4xl font-semibold leading-[1.06] tracking-[-0.012em] text-foreground sm:text-5xl"
+                className="font-serif text-4xl font-semibold leading-[1.04] tracking-[-0.02em] text-foreground sm:text-5xl"
               >
                 Trusted by Homeowners
                 <br className="sm:hidden" />
                 {" "}Across Northern Virginia
+              </Reveal>
+              <Reveal y={10} duration={0.85}>
+                <p className="mt-4 max-w-[60ch] text-[15px] leading-[1.85] text-foreground/60">
+                  Reviews that match the work: premium execution, clear communication, and a finished yard you’re proud of.
+                </p>
               </Reveal>
             </div>
 
@@ -50,10 +111,10 @@ export function TrustSection() {
                 href={GOOGLE_MAPS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-xs font-medium text-muted underline-offset-4 transition hover:text-foreground hover:underline"
+                className="flex items-center gap-2 rounded-full border border-white/12 bg-white/5 px-4 py-2 text-[12px] font-semibold tracking-[0.16em] uppercase text-foreground/80 shadow-[0_20px_60px_-50px_rgba(0,0,0,0.9)] transition hover:border-white/18 hover:bg-white/8 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/55"
               >
-                <GoogleIcon size={12} />
-                Verify on Google Maps →
+                <GoogleIcon size={14} />
+                View on Google
               </a>
             </Reveal>
           </div>
@@ -62,9 +123,21 @@ export function TrustSection() {
 
             {/* Review cards */}
             {hasReviews && (
-              <div data-stagger className="grid gap-8 md:grid-cols-2 md:gap-10 lg:grid-cols-3 lg:gap-x-12">
+              <div data-stagger className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:items-stretch">
                 {displayedReviews.map((review, i) => (
-                  <ReviewCard key={`${review.author}-${i}`} {...review} />
+                  <div key={`${review.name || "review"}-${i}`} className="h-full">
+                    <GoogleReviewCard
+                      name={review.name}
+                      meta={review.meta}
+                      stars={review.stars}
+                      body={review.body}
+                      avatarUrl={review.avatarUrl}
+                      photos={review.photos}
+                      timeAgo={review.timeAgo}
+                      badge={review.badge}
+                      href={GOOGLE_MAPS_URL}
+                    />
+                  </div>
                 ))}
               </div>
             )}
@@ -75,10 +148,10 @@ export function TrustSection() {
                 href={GOOGLE_MAPS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/6 px-7 py-3.5 text-[13px] font-semibold tracking-[0.03em] text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.07)] transition hover:border-white/24 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/55"
+                className="inline-flex items-center gap-2.5 rounded-full border border-white/12 bg-white/6 px-7 py-3.5 text-[12px] font-semibold tracking-[0.18em] uppercase text-foreground/85 shadow-[0_30px_90px_-70px_rgba(0,0,0,0.95)] transition hover:border-white/18 hover:bg-white/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/55"
               >
                 <GoogleIcon size={16} />
-                See all reviews on Google
+                See more reviews
               </a>
             </div>
 
@@ -86,33 +159,6 @@ export function TrustSection() {
         </div>
       </Container>
     </section>
-  );
-}
-
-function ReviewCard({ text, author, location, rating }) {
-  return (
-    <div className="space-y-4 border-t border-white/9 pt-7">
-      <Stars count={rating} />
-      {text ? (
-        <p className="text-sm font-medium leading-[1.72] text-muted lg:text-[1.0625rem] lg:leading-[1.72]">
-          &ldquo;{text}&rdquo;
-        </p>
-      ) : null}
-      <div className="flex items-center justify-between gap-3">
-        <div className="text-xs font-medium tracking-[0.08em] uppercase text-muted/90 lg:text-[13px]">
-          {author}{location ? ` • ${location}` : ""}
-        </div>
-        <a
-          href={GOOGLE_MAPS_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="shrink-0 opacity-60 transition hover:opacity-100"
-          aria-label="View on Google"
-        >
-          <GoogleIcon size={14} />
-        </a>
-      </div>
-    </div>
   );
 }
 
