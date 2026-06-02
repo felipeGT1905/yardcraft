@@ -73,6 +73,7 @@ export function ReviewsSection({ id, label, title, items, googleMapsUrl }) {
                 body={review.body}
                 avatarUrl={review.avatarUrl}
                 photos={review.photos}
+                photoLayout={review.photoLayout}
                 timeAgo={review.timeAgo}
                 badge={review.badge}
                 href={mapsUrl}

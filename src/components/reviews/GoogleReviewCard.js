@@ -35,22 +35,42 @@ export function GoogleReviewCard({
   body,
   avatarUrl,
   photos = [],
+  photoLayout,
   href,
 }) {
-  // Enforce max 2 photos to match the design spec.
-  const list = Array.isArray(photos) ? photos.filter(Boolean).slice(0, 2) : [];
-  const firstPhoto = list[0] || null;
-  const secondPhoto = list[1] || null;
+  const list = Array.isArray(photos) ? photos.filter(Boolean) : [];
+  const isCollage = photoLayout === "collage" && list.length >= 4;
+  const collage = isCollage ? list.slice(0, 4) : [];
+  const firstPhoto = !isCollage ? (list[0] || null) : null;
+
+  const cardHref = href || firstPhoto || collage[0] || "";
+
+  const CardLink = ({ children }) =>
+    cardHref ? (
+      <a
+        href={cardHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/55 rounded-[22px]"
+        aria-label={`View ${name || "review"} on Google`}
+      >
+        {children}
+      </a>
+    ) : (
+      <div className="h-full">{children}</div>
+    );
 
   return (
     <article
       className={cx(
-        "group relative flex h-full flex-col overflow-hidden rounded-[22px]",
+        "group relative h-full overflow-hidden rounded-[22px]",
         "border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))]",
         "shadow-[0_26px_80px_-54px_rgba(0,0,0,0.85)]",
         "transition-transform duration-500 ease-out hover:-translate-y-1",
       )}
     >
+      <CardLink>
+        <div className="relative flex h-full flex-col">
       {/* Ambient edge glow + inner highlight */}
       <div
         aria-hidden="true"
@@ -104,10 +124,7 @@ export function GoogleReviewCard({
               </div>
 
               {href ? (
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <span
                   className={cx(
                     "shrink-0 rounded-full border border-white/10 bg-white/5 px-2.5 py-1",
                     "text-[11px] font-semibold tracking-[0.06em] text-foreground/75 uppercase",
@@ -116,7 +133,7 @@ export function GoogleReviewCard({
                   )}
                 >
                   Google
-                </a>
+                </span>
               ) : null}
             </div>
 
@@ -144,17 +161,33 @@ export function GoogleReviewCard({
         </div>
       </div>
 
+      {isCollage ? (
+        <div className="block border-t border-white/10 bg-black/10">
+          <div className="relative aspect-4/3 w-full overflow-hidden">
+            <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-px bg-white/10">
+              {collage.map((url, i) => (
+                <div
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`${url}-${i}`}
+                  className="relative overflow-hidden bg-black/30"
+                >
+                  <div
+                    className={cx(
+                      "absolute inset-0 bg-cover bg-center",
+                      "transition-transform duration-700 ease-out group-hover:scale-[1.03]",
+                    )}
+                    style={{ backgroundImage: `url(${url})` }}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="absolute inset-0 bg-linear-to-t from-black/55 via-black/12 to-transparent" />
+          </div>
+        </div>
+      ) : null}
+
       {firstPhoto ? (
-        <a
-          href={href || firstPhoto}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={cx(
-            "block border-t border-white/10 bg-black/10",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/55",
-          )}
-          aria-label="View review photo"
-        >
+        <div className="block border-t border-white/10 bg-black/10">
           <div className="grid">
             <div className="relative aspect-4/3 w-full overflow-hidden">
               <div
@@ -164,52 +197,13 @@ export function GoogleReviewCard({
                 )}
                 style={{ backgroundImage: `url(${firstPhoto})` }}
               />
-              {secondPhoto ? (
-                <span className="absolute left-3 top-3 rounded-full border border-white/15 bg-black/60 px-3 py-1 text-[10px] font-semibold tracking-[0.18em] text-white/90">
-                  BEFORE
-                </span>
-              ) : null}
-              <div className="absolute inset-0 bg-linear-to-t from-black/55 via-black/12 to-transparent" />
-            </div>
-
-            <div className="relative aspect-4/3 w-full overflow-hidden border-t border-white/10">
-              {secondPhoto ? (
-                <div
-                  className={cx(
-                    "absolute inset-0 bg-cover bg-center",
-                    "transition-transform duration-700 ease-out group-hover:scale-[1.03]",
-                  )}
-                  style={{ backgroundImage: `url(${secondPhoto})` }}
-                />
-              ) : (
-                <div
-                  className={cx(
-                    "absolute inset-0",
-                    "bg-[radial-gradient(520px_260px_at_35%_15%,rgba(214,178,94,0.10),transparent_58%)]",
-                    "bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))]",
-                  )}
-                >
-                  <div
-                    aria-hidden="true"
-                    className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.25)_1px,transparent_0)] bg-size-[18px_18px] opacity-[0.35]"
-                  />
-                </div>
-              )}
-              <span className="absolute left-3 top-3 rounded-full border border-white/15 bg-black/60 px-3 py-1 text-[10px] font-semibold tracking-[0.18em] text-white/90">
-                AFTER
-              </span>
-              {!secondPhoto ? (
-                <div className="absolute inset-x-0 bottom-0 p-4">
-                  <div className="rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-[12px] leading-snug text-foreground/70">
-                    After photo coming soon.
-                  </div>
-                </div>
-              ) : null}
               <div className="absolute inset-0 bg-linear-to-t from-black/55 via-black/12 to-transparent" />
             </div>
           </div>
-        </a>
+        </div>
       ) : null}
+        </div>
+      </CardLink>
     </article>
   );
 }

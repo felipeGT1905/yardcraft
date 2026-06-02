@@ -104,8 +104,7 @@ export const landingContent = {
           avatarUrl:
             "https://lh3.googleusercontent.com/a-/ALV-UjVSPrvfubXpMSaVTENZFmzxiG6FhZ3vP9rigI2hbDc0yqA5Pz4=w45-h45-p-rp-mo-br100",
           photos: [
-            "https://lh3.googleusercontent.com/grass-cs/ANxoTn3vXQK84kvo5YWtdotHeXeYRvV21pBur4sMIjCnAc84zdeDmqNE0qviyFny7Kbaw2r0tgOEEh6qHU7RsVMHuqeQbn4RMIhY8HhmzbuJdlI2a0RSUBnt9djbZYj8_hCZWgijb7K1svX-srsa=w375-h281-p-k-no",
-            "https://lh3.googleusercontent.com/grass-cs/ANxoTn0Qc4IarfEzhBZ5Ft8qIJEb3ul-7YqS-J9EYs8gt1E2J7EVJQz9gGU0E3ZYA1gp_LC4Yv9sXhZCjvZUL-K35RyKj0939cmCSDiRQXL9RYKJGmekbyGsv7FMpMDImHf5KVatj053HmYESKY=w375-h281-p-k-no",
+            "/images/reviews/anne-collage.jpg",
           ],
         },
         {
@@ -119,7 +118,7 @@ export const landingContent = {
           avatarUrl:
             "https://lh3.googleusercontent.com/a/ACg8ocIA6HLD9-WfJUkt6s-KAo5zx3ngG2K-eRLIURfl9Svj8ad6xQ=w45-h45-p-rp-mo-br100",
           photos: [
-            "https://lh3.googleusercontent.com/grass-cs/ANxoTn0t9vF-04vMwPBb3EOhrs1bSFef25vpYD-zdg-8WvnDCETMnxXCVdG6XqDAqLgSLZnHVqktPHKYeo4yxcGLLEYTA1n1QeTIQinwBFH6XPaRGIQdnkgoqIEqJdaYxvJkpIO0BGlNJW1sM2oz=w750-h563-p-k-no",
+            "/images/reviews/will-before-after.jpg",
           ],
         },
         {
@@ -133,7 +132,7 @@ export const landingContent = {
           avatarUrl:
             "https://lh3.googleusercontent.com/a/ACg8ocLHvXwVjOCVVE5_qnctc6y6LaDQe-mjKOz4hAmyaFw2nx7yfA=w45-h45-p-rp-mo-br100",
           photos: [
-            "https://lh3.googleusercontent.com/grass-cs/ANxoTn3fn8S8LXhEODDy97kOBq9FVWh13CcapJ0pbmdTlse_MHTc5r62al_jKAwEHZz8vK-JinnRCaFIHZnUHIrDAg-uYaCMd1bfPJUp3kYaeDJvKUo9rvJ-PkUEOzcNvoBUwFqz12xYHdkM1GaI=w750-h563-p-k-no",
+            "/images/reviews/dianna-before-after.jpg",
           ],
         },
         {
