@@ -162,44 +162,46 @@ export function GoogleReviewCard({
       </div>
 
       {isCollage ? (
-        <div className="block border-t border-white/10 bg-black/10">
-          <div className="relative aspect-4/3 w-full overflow-hidden">
-            <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-px bg-white/10">
-              {collage.map((url, i) => (
-                <div
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={`${url}-${i}`}
-                  className="relative overflow-hidden bg-black/30"
-                >
-                  <div
-                    className={cx(
-                      "absolute inset-0 bg-cover bg-center",
-                      "transition-transform duration-700 ease-out group-hover:scale-[1.03]",
-                    )}
-                    style={{ backgroundImage: `url(${url})` }}
-                  />
-                </div>
-              ))}
-            </div>
-            <div className="absolute inset-0 bg-linear-to-t from-black/55 via-black/12 to-transparent" />
+        <div className="block border-t border-white/10 bg-black/20 leading-0">
+          <div className="grid grid-cols-2 gap-0.5 bg-black/40">
+            {collage.map((url, i) => (
+              <div
+                // eslint-disable-next-line react/no-array-index-key
+                key={`${url}-${i}`}
+                className="overflow-hidden bg-black/20 leading-0"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={url}
+                  alt=""
+                  className={cx(
+                    "block h-auto w-full object-contain object-center",
+                    "brightness-[1.04] contrast-[1.06] saturate-[1.05]",
+                    "transition-transform duration-700 ease-out group-hover:scale-[1.02]",
+                  )}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            ))}
           </div>
         </div>
       ) : null}
 
       {firstPhoto ? (
-        <div className="block border-t border-white/10 bg-black/10">
-          <div className="grid">
-            <div className="relative aspect-4/3 w-full overflow-hidden">
-              <div
-                className={cx(
-                  "absolute inset-0 bg-cover bg-center",
-                  "transition-transform duration-700 ease-out group-hover:scale-[1.03]",
-                )}
-                style={{ backgroundImage: `url(${firstPhoto})` }}
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-black/55 via-black/12 to-transparent" />
-            </div>
-          </div>
+        <div className="block border-t border-white/10 bg-black/20 leading-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={firstPhoto}
+            alt=""
+            className={cx(
+              "block h-auto w-full object-contain object-center",
+              "brightness-[1.05] contrast-[1.08] saturate-[1.06]",
+              "transition-transform duration-700 ease-out group-hover:scale-[1.01]",
+            )}
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       ) : null}
         </div>
