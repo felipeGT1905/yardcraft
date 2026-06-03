@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { BeforeAfterSlider } from "@/components/design/BeforeAfterSlider";
+import { DesignComparisonComingSoon } from "@/components/design/DesignComparisonComingSoon";
 
 function cx(...parts) {
   return parts.filter(Boolean).join(" ");
@@ -114,7 +115,7 @@ export function PremiumBeforeAfter({
     () => false,
   );
 
-  const hasAny = Boolean(beforeUrl || afterUrl);
+  const hasImages = Boolean(beforeUrl || afterUrl);
   const canCompare = Boolean(beforeUrl && afterUrl);
   const showRotateHint = modalActive && portraitMobileHint && canCompare;
   const onChange = useCallback((pct) => {
@@ -175,6 +176,15 @@ export function PremiumBeforeAfter({
     useMobileAspectFrame ? undefined : className,
   );
 
+  if (!hasImages) {
+    return (
+      <DesignComparisonComingSoon
+        className={className}
+        useMobileAspectFrame={useMobileAspectFrame}
+      />
+    );
+  }
+
   const sharedSliderProps = {
     beforeUrl,
     afterUrl,
@@ -218,13 +228,13 @@ export function PremiumBeforeAfter({
                 aria-hidden="true"
               />
             ) : null}
-            {hasAny && canCompare && !modalActive ? <FullscreenButton onClick={openFullscreen} /> : null}
+            {canCompare && !modalActive ? <FullscreenButton onClick={openFullscreen} /> : null}
             <RotateHint visible={!modalActive && portraitMobileHint && canCompare} />
           </div>
         ) : (
           <div className="relative h-full min-h-0 w-full overflow-hidden">
             {renderInlineSlider("fill")}
-            {hasAny && canCompare && !modalActive ? <FullscreenButton onClick={openFullscreen} /> : null}
+            {canCompare && !modalActive ? <FullscreenButton onClick={openFullscreen} /> : null}
             <RotateHint visible={!modalActive && portraitMobileHint && canCompare} />
           </div>
         )}
