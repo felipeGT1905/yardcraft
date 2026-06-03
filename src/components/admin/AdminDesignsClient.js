@@ -19,6 +19,7 @@ import {
   resolveDesignSlug,
 } from "@/lib/designSlug";
 import { formatDisplayDate, formatDisplayDateTime } from "@/lib/formatDate";
+import { ImageGpsPanel } from "@/components/admin/ImageGpsPanel";
 
 function cx(...parts) {
   return parts.filter(Boolean).join(" ");
@@ -400,6 +401,67 @@ export function AdminDesignsClient({ initialDesigns }) {
     [selected?.slug, selectedSlug],
   );
 
+  const [imageGps, setImageGps] = useState({
+    loading: false,
+    before: { found: false },
+    after: { found: false },
+  });
+
+  useEffect(() => {
+    const slug = selectedCanonicalSlug;
+    if (!slug) {
+      setImageGps({ loading: false, before: { found: false }, after: { found: false } });
+      return;
+    }
+
+    const hasBefore = Boolean(selected?.before_image);
+    const hasAfter = Boolean(selected?.after_image);
+    if (!hasBefore && !hasAfter) {
+      setImageGps({ loading: false, before: { found: false }, after: { found: false } });
+      return;
+    }
+
+    let cancelled = false;
+    setImageGps((prev) => ({ ...prev, loading: true }));
+
+    fetch(`/api/admin/designs/${encodeURIComponent(slug)}/gps`, { cache: "no-store" })
+      .then(async (res) => {
+        const json = await res.json().catch(() => ({}));
+        if (cancelled) return;
+        if (!res.ok || !json?.ok) {
+          setImageGps({
+            loading: false,
+            before: { found: false },
+            after: { found: false },
+          });
+          return;
+        }
+        setImageGps({
+          loading: false,
+          before: json.before || { found: false },
+          after: json.after || { found: false },
+        });
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setImageGps({
+            loading: false,
+            before: { found: false },
+            after: { found: false },
+          });
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    selectedCanonicalSlug,
+    selected?.before_image,
+    selected?.after_image,
+    previewVersion,
+  ]);
+
   return (
     <div className="grid gap-6 xl:grid-cols-[360px_1fr]">
       <ToastHost toasts={toasts} onRemove={removeToast} />
@@ -731,6 +793,8 @@ export function AdminDesignsClient({ initialDesigns }) {
               updatedAt={selected?.updated_at || selected?.created_at || null}
               updatedBy={selected?.updated_by || null}
               guidance="Recommended: 1600×1000+ • JPG/PNG/WebP • Max 20 MB"
+              gps={imageGps.before}
+              gpsLoading={imageGps.loading}
               onUpload={(file) => upload("before", file)}
               onClear={() => clearImage("before")}
               onValidationError={(message) => {
@@ -752,6 +816,8 @@ export function AdminDesignsClient({ initialDesigns }) {
               updatedAt={selected?.updated_at || selected?.created_at || null}
               updatedBy={selected?.updated_by || null}
               guidance="Recommended: 1600×1000+ • JPG/PNG/WebP • Max 20 MB"
+              gps={imageGps.after}
+              gpsLoading={imageGps.loading}
               onUpload={(file) => upload("after", file)}
               onClear={() => clearImage("after")}
               onValidationError={(message) => {
@@ -802,6 +868,8 @@ function AssetCard({
   updatedAt,
   updatedBy,
   guidance,
+  gps,
+  gpsLoading = false,
   onUpload,
   onClear,
   onValidationError,
@@ -907,6 +975,8 @@ function AssetCard({
             Drop to select file
           </div>
         </div>
+
+        <ImageGpsPanel gps={gps} loading={gpsLoading} visible={Boolean(url)} />
       </div>
 
       <div className="relative mt-4 flex flex-col gap-3">
