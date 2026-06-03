@@ -4,6 +4,19 @@ function cx(...parts) {
   return parts.filter(Boolean).join(" ");
 }
 
+/** Shared height for every review photo band (all cards, all layouts). */
+const PHOTO_BAND_CLASS =
+  "relative h-[min(300px,42vw)] w-full shrink-0 overflow-hidden bg-black/20 sm:h-[280px] lg:h-[300px]";
+
+function photoImgClass(fit = "contain") {
+  return cx(
+    "absolute inset-0 h-full w-full object-center",
+    fit === "cover" ? "object-cover" : "object-contain",
+    "brightness-[1.05] contrast-[1.08] saturate-[1.06]",
+    "transition-transform duration-700 ease-out group-hover:scale-[1.02]",
+  );
+}
+
 function StarIcon({ filled }) {
   return (
     <span
@@ -36,6 +49,7 @@ export function GoogleReviewCard({
   avatarUrl,
   photos = [],
   photoLayout,
+  photoFit = "contain",
   href,
 }) {
   const list = Array.isArray(photos) ? photos.filter(Boolean) : [];
@@ -162,46 +176,42 @@ export function GoogleReviewCard({
       </div>
 
       {isCollage ? (
-        <div className="block border-t border-white/10 bg-black/20 leading-0">
-          <div className="grid grid-cols-2 gap-0.5 bg-black/40">
-            {collage.map((url, i) => (
-              <div
-                // eslint-disable-next-line react/no-array-index-key
-                key={`${url}-${i}`}
-                className="overflow-hidden bg-black/20 leading-0"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={url}
-                  alt=""
-                  className={cx(
-                    "block h-auto w-full object-contain object-center",
-                    "brightness-[1.04] contrast-[1.06] saturate-[1.05]",
-                    "transition-transform duration-700 ease-out group-hover:scale-[1.02]",
-                  )}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            ))}
+        <div className="mt-auto shrink-0 border-t border-white/10 leading-0">
+          <div className={cx(PHOTO_BAND_CLASS, "bg-black/40")}>
+            <div className="grid h-full grid-cols-2 grid-rows-2 gap-0.5">
+              {collage.map((url, i) => (
+                <div
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`${url}-${i}`}
+                  className="relative overflow-hidden bg-black/20"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={url}
+                    alt=""
+                    className={photoImgClass("contain")}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       ) : null}
 
       {firstPhoto ? (
-        <div className="block border-t border-white/10 bg-black/20 leading-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={firstPhoto}
-            alt=""
-            className={cx(
-              "block h-auto w-full object-contain object-center",
-              "brightness-[1.05] contrast-[1.08] saturate-[1.06]",
-              "transition-transform duration-700 ease-out group-hover:scale-[1.01]",
-            )}
-            loading="lazy"
-            decoding="async"
-          />
+        <div className="mt-auto shrink-0 border-t border-white/10 leading-0">
+          <div className={PHOTO_BAND_CLASS}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={firstPhoto}
+              alt=""
+              className={photoImgClass(photoFit)}
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
         </div>
       ) : null}
         </div>

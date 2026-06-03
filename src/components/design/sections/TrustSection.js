@@ -23,8 +23,9 @@ const REVIEWS = [
     avatarUrl:
       "https://lh3.googleusercontent.com/a-/ALV-UjVSPrvfubXpMSaVTENZFmzxiG6FhZ3vP9rigI2hbDc0yqA5Pz4=w45-h45-p-rp-mo-br100",
     photos: [
-      "/images/reviews/anne-collage.jpg",
+      "/images/reviews/anne-collage.png",
     ],
+    photoFit: "cover",
   },
   {
     name: "Will Cullin",
@@ -131,6 +132,7 @@ export function TrustSection() {
                       avatarUrl={review.avatarUrl}
                       photos={review.photos}
                       photoLayout={review.photoLayout}
+                      photoFit={review.photoFit}
                       timeAgo={review.timeAgo}
                       badge={review.badge}
                       href={GOOGLE_MAPS_URL}
