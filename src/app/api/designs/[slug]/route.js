@@ -4,7 +4,8 @@ import { getDesignBySlug, updateDesignBySlug } from "@/lib/designs";
 import { requireAdminApi } from "@/lib/authApi";
 
 export async function GET(_request, { params }) {
-  const design = await getDesignBySlug(params.slug);
+  const { slug } = await params;
+  const design = await getDesignBySlug(slug);
   if (!design) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
@@ -15,6 +16,8 @@ export async function PATCH(request, { params }) {
   const gate = await requireAdminApi();
   if (!gate.ok) return gate.response;
 
+  const { slug } = await params;
+
   let body = null;
   try {
     body = await request.json();
@@ -23,7 +26,7 @@ export async function PATCH(request, { params }) {
   }
 
   try {
-    const design = await updateDesignBySlug(params.slug, body, { userId: gate.user?.id });
+    const design = await updateDesignBySlug(slug, body, { userId: gate.user?.id });
     if (!design) {
       return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
     }
