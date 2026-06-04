@@ -20,10 +20,13 @@ export async function GET(_request, { params }) {
     return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
   }
 
-  const [before, after] = await Promise.all([
-    design.before_image ? readGpsFromImageUrl(design.before_image) : Promise.resolve({ found: false }),
-    design.after_image ? readGpsFromImageUrl(design.after_image) : Promise.resolve({ found: false }),
-  ]);
+  // Sequential: Nominatim allows ~1 request/sec; each readGpsFromImageUrl geocodes after EXIF.
+  const before = design.before_image
+    ? await readGpsFromImageUrl(design.before_image)
+    : { found: false };
+  const after = design.after_image
+    ? await readGpsFromImageUrl(design.after_image)
+    : { found: false };
 
   return NextResponse.json({
     ok: true,
