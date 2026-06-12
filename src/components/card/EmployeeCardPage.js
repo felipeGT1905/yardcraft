@@ -179,6 +179,18 @@ export function EmployeeCardPage({ employee }) {
               ) : null}
             </div>
 
+            <div className="border-t border-white/8 px-4 py-5 sm:px-5">
+              {employee?.slug ? (
+                <Button
+                  href={`/api/card/${employee.slug}/vcf`}
+                  download={`${employee.slug}.vcf`}
+                  className="w-full justify-center py-4 text-[14px] sm:text-[13px]"
+                >
+                  Save Contact
+                </Button>
+              ) : null}
+            </div>
+
             <div className="grid gap-2.5 border-t border-white/8 px-4 py-5 sm:grid-cols-2 sm:px-5">
               <ActionButton href={officeTel ? `tel:${officeTel}` : null} primary>
                 Call Office
