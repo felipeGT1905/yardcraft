@@ -39,12 +39,12 @@ rows as (
   select *
   from (
     values
-      ('felipe', 'Felipe Gomez', 'Growth Director', '+15717740966', 'felipe@yardcraft.us'),
-      ('javier', 'Javier Perez', 'Project Director', '+17033039064', 'javier@yardcraft.us'),
-      ('nicolas', 'Nicolas Gomez', 'Project Director', '+15715764992', 'support@yardcraft.us'),
-      ('ricardo', 'Ricardo Perez', 'Relationship Manager', '+15712439764', 'support@yardcraft.us'),
-      ('steven', 'Steven Perez', 'Strategic Operations', '+15714381525', 'support@yardcraft.us')
-  ) as v(slug, display_name, job_title, direct_phone, email)
+      ('felipe', 'Felipe Gomez', 'Growth Director', '+15717740966', 'felipe@yardcraft.us', '/images/employees/felipe.png'),
+      ('javier', 'Javier Perez', 'Project Director', '+17033039064', 'javier@yardcraft.us', null),
+      ('nicolas', 'Nicolas Gomez', 'Project Director', '+15715764992', 'support@yardcraft.us', '/images/employees/nicolas.png'),
+      ('ricardo', 'Ricardo Perez', 'Relationship Manager', '+15712439764', 'support@yardcraft.us', null),
+      ('steven', 'Steven Perez', 'Strategic Operations', '+15714381525', 'support@yardcraft.us', '/images/employees/steven.png')
+  ) as v(slug, display_name, job_title, direct_phone, email, photo_url)
 )
 insert into public.employees (
   slug,
@@ -67,7 +67,7 @@ select
   r.direct_phone,
   r.email,
   'Arlington, VA',
-  null,
+  r.photo_url,
   s.social_links,
   s.notes,
   true
@@ -80,6 +80,7 @@ on conflict (slug) do update set
   direct_phone = excluded.direct_phone,
   email = excluded.email,
   location = excluded.location,
+  photo_url = excluded.photo_url,
   social_links = excluded.social_links,
   notes = excluded.notes,
   is_published = excluded.is_published,

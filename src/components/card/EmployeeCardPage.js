@@ -1,4 +1,5 @@
-import { Logo } from "@/components/site/Logo";
+import Image from "next/image";
+
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { landingOutlineCtaClassName } from "@/components/ui/landingOutlineCta";
@@ -20,14 +21,82 @@ function formatPhoneDisplay(phone) {
   return phone.trim();
 }
 
-function getInitials(name) {
-  const parts = String(name || "")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-  if (!parts.length) return "?";
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+function EmployeeCardHero({ employee, photoUrl, location }) {
+  return (
+    <section className="relative overflow-hidden px-5 pb-8 pt-7 sm:px-7 sm:pb-10 sm:pt-9">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(168deg,rgba(6,6,8,0.98)_0%,rgba(14,18,14,0.94)_48%,rgba(8,10,8,0.98)_100%)]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(620px_280px_at_50%_-20%,rgba(214,178,94,0.2),transparent_68%)]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(480px_220px_at_100%_100%,rgba(31,122,58,0.14),transparent_62%)]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-8 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent)]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-[linear-gradient(90deg,transparent,rgba(214,178,94,0.32),transparent)]"
+      />
+
+      <p className="relative text-center text-[10px] font-semibold tracking-[0.32em] uppercase text-gold/60">
+        {BRAND.name}
+      </p>
+
+      <div className="relative mx-auto mt-7 flex justify-center sm:mt-8">
+        <div className="relative">
+          <div
+            aria-hidden="true"
+            className="absolute -inset-[5px] rounded-full bg-[conic-gradient(from_210deg,rgba(214,178,94,0.45),rgba(31,122,58,0.28),rgba(214,178,94,0.2),rgba(214,178,94,0.45))] opacity-90 blur-[1px]"
+          />
+          <div className="relative rounded-full bg-[linear-gradient(145deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] p-[3px] shadow-[0_28px_70px_-22px_rgba(0,0,0,0.92),inset_0_1px_0_rgba(255,255,255,0.12)]">
+            <div className="overflow-hidden rounded-full bg-black/50 ring-1 ring-white/10">
+              {photoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={photoUrl}
+                  alt=""
+                  className="block h-[8.75rem] w-[8.75rem] object-cover object-center sm:h-[9.75rem] sm:w-[9.75rem]"
+                />
+              ) : (
+                <div className="grid h-[8.75rem] w-[8.75rem] place-items-center overflow-hidden bg-[radial-gradient(circle_at_30%_20%,rgba(214,178,94,0.14),rgba(0,0,0,0.88)_68%)] sm:h-[9.75rem] sm:w-[9.75rem]">
+                  <Image
+                    src="/images/YardCraftLogo.png"
+                    alt={BRAND.name}
+                    width={320}
+                    height={320}
+                    className="h-[7.25rem] w-[7.25rem] scale-[1.08] object-contain opacity-95 sm:h-[8rem] sm:w-[8rem] sm:scale-[1.1]"
+                    priority
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="relative mt-8 text-center sm:mt-9">
+        <h1 className="font-serif text-[1.85rem] font-semibold leading-[1.08] tracking-tight text-foreground sm:text-[2.1rem]">
+          {employee?.display_name || "Team member"}
+        </h1>
+        {employee?.job_title ? (
+          <p className="mt-2.5 text-[12px] font-semibold tracking-[0.18em] uppercase text-gold/90 sm:text-[13px]">
+            {employee.job_title}
+          </p>
+        ) : null}
+        {location ? (
+          <p className="mt-2 text-[13px] font-medium text-foreground/55 sm:text-sm">{location}</p>
+        ) : null}
+        <p className="mt-3 text-[11px] font-medium tracking-[0.14em] text-muted/80">{BRAND.tagline}</p>
+      </div>
+    </section>
+  );
 }
 
 function ContactRow({ label, value, href, external = false }) {
@@ -104,63 +173,16 @@ export function EmployeeCardPage({ employee }) {
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.35),transparent_28%,rgba(0,0,0,0.45))]" />
       </div>
 
-      <header className="relative z-10 pt-6 sm:pt-8">
-        <Container className="flex flex-col items-center px-4 text-center">
-          <Logo variant="mark" className="[&_img]:!h-12 [&_img]:!w-12 sm:[&_img]:!h-14 sm:[&_img]:!w-14" />
-          <p className="mt-3 font-serif text-[1.125rem] font-semibold tracking-[-0.02em] text-foreground sm:text-xl">
-            {BRAND.name}
-          </p>
-          <p className="mt-1 text-[11px] font-medium tracking-[0.22em] uppercase text-gold/85">
-            {BRAND.tagline}
-          </p>
-        </Container>
-      </header>
-
-      <main className="relative z-10 mt-6 sm:mt-8">
+      <main className="relative z-10 pt-4 sm:pt-6">
         <Container className="max-w-md px-4">
           <article
             className={cx(
-              "overflow-hidden rounded-[24px] border border-white/10",
-              "bg-[linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03))]",
-              "shadow-[0_28px_80px_-54px_rgba(0,0,0,0.9)]",
+              "overflow-hidden rounded-[26px] border border-white/10",
+              "bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))]",
+              "shadow-[0_32px_90px_-48px_rgba(0,0,0,0.95)]",
             )}
           >
-            <div
-              aria-hidden="true"
-              className="pointer-events-none h-24 bg-[radial-gradient(520px_120px_at_50%_0%,rgba(214,178,94,0.16),transparent_70%)]"
-            />
-
-            <div className="-mt-14 flex flex-col items-center px-5 pb-6 pt-0 text-center sm:px-6 sm:pb-7">
-              <div className="relative">
-                {photoUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={photoUrl}
-                    alt=""
-                    className="h-28 w-28 rounded-full border-4 border-background object-cover shadow-[0_18px_40px_-20px_rgba(0,0,0,0.9)] sm:h-32 sm:w-32"
-                  />
-                ) : (
-                  <div
-                    aria-hidden="true"
-                    className="grid h-28 w-28 place-items-center rounded-full border-4 border-background bg-[linear-gradient(145deg,rgba(214,178,94,0.22),rgba(31,122,58,0.18))] text-2xl font-semibold tracking-tight text-foreground shadow-[0_18px_40px_-20px_rgba(0,0,0,0.9)] sm:h-32 sm:w-32 sm:text-3xl"
-                  >
-                    {getInitials(employee?.display_name)}
-                  </div>
-                )}
-              </div>
-
-              <h1 className="mt-4 font-serif text-[1.65rem] font-semibold leading-[1.1] tracking-[-0.025em] text-foreground sm:text-[1.85rem]">
-                {employee?.display_name || "Team member"}
-              </h1>
-              {employee?.job_title ? (
-                <p className="mt-1.5 text-[13px] font-semibold tracking-[0.14em] uppercase text-gold/90 sm:text-sm">
-                  {employee.job_title}
-                </p>
-              ) : null}
-              {location ? (
-                <p className="mt-2 text-[13px] text-muted sm:text-sm">{location}</p>
-              ) : null}
-            </div>
+            <EmployeeCardHero employee={employee} photoUrl={photoUrl} location={location} />
 
             <div className="space-y-2.5 border-t border-white/8 px-4 py-5 sm:px-5">
               <ContactRow
