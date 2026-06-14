@@ -10,6 +10,9 @@ const EXTENSION_TO_VCARD_TYPE = {
   gif: "GIF",
 };
 
+const VCARD_PHOTO_SIZE = 256;
+const VCARD_JPEG_QUALITY = 82;
+
 function vcardTypeFromPath(filePath) {
   const ext = path.extname(filePath).slice(1).toLowerCase();
   return EXTENSION_TO_VCARD_TYPE[ext] || null;
@@ -38,12 +41,33 @@ function toAbsolutePhotoUrl(photoUrl) {
   return null;
 }
 
+async function prepareVCardPhoto(buffer) {
+  if (!buffer?.length) return null;
+
+  try {
+    const sharp = (await import("sharp")).default;
+    const jpegBuffer = await sharp(buffer)
+      .rotate()
+      .resize(VCARD_PHOTO_SIZE, VCARD_PHOTO_SIZE, { fit: "cover" })
+      .jpeg({ quality: VCARD_JPEG_QUALITY, mozjpeg: true })
+      .toBuffer();
+
+    if (!jpegBuffer.length) return null;
+    return { type: "JPEG", base64: jpegBuffer.toString("base64") };
+  } catch {
+    return null;
+  }
+}
+
 async function loadPhotoFromFile(filePath) {
   const type = vcardTypeFromPath(filePath);
   if (!type) return null;
 
   try {
     const buffer = await readFile(filePath);
+    const prepared = await prepareVCardPhoto(buffer);
+    if (prepared) return prepared;
+
     if (!buffer.length) return null;
     return { type, base64: buffer.toString("base64") };
   } catch {
@@ -60,6 +84,9 @@ async function loadPhotoFromUrl(photoUrl) {
     if (!response.ok) return null;
 
     const buffer = Buffer.from(await response.arrayBuffer());
+    const prepared = await prepareVCardPhoto(buffer);
+    if (prepared) return prepared;
+
     if (!buffer.length) return null;
 
     let type = vcardTypeFromPath(new URL(absoluteUrl).pathname);
