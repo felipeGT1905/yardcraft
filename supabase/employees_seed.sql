@@ -68,7 +68,13 @@ select
   r.email,
   'Arlington, VA',
   r.photo_url,
-  s.social_links,
+  case r.slug
+    when 'felipe' then
+      s.social_links || '{"personal_instagram":"https://www.instagram.com/felipecolombian?igsh=ZTAwb2g5M2V4c2xm&utm_source=qr"}'::jsonb
+    when 'nicolas' then
+      s.social_links || '{"personal_instagram":"https://www.instagram.com/nicofollowsjesus?igsh=MW4xcnBjcWR2d2xtNg=="}'::jsonb
+    else s.social_links
+  end,
   s.notes,
   true
 from rows r

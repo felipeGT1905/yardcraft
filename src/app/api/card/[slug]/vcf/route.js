@@ -3,22 +3,8 @@ import { NextResponse } from "next/server";
 import { getEmployeeBySlug } from "@/lib/employees";
 import { isValidEmployeeSlug } from "@/lib/employeeSlug";
 import { buildEmployeeVCard } from "@/lib/vcard";
-import { loadEmployeeVCardPhoto } from "@/lib/vcardPhoto";
 
-export const runtime = "nodejs";
-
-function requestOrigin(request) {
-  const forwardedHost = request.headers.get("x-forwarded-host");
-  const forwardedProto = request.headers.get("x-forwarded-proto") || "https";
-
-  if (forwardedHost) {
-    return `${forwardedProto}://${forwardedHost.split(",")[0].trim()}`;
-  }
-
-  return new URL(request.url).origin;
-}
-
-export async function GET(request, { params }) {
+export async function GET(_request, { params }) {
   const { slug } = await params;
   if (!isValidEmployeeSlug(slug)) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
@@ -29,10 +15,7 @@ export async function GET(request, { params }) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 
-  const photo = await loadEmployeeVCardPhoto(employee.photo_url, {
-    origin: requestOrigin(request),
-  });
-  const vcf = buildEmployeeVCard(employee, photo);
+  const vcf = buildEmployeeVCard(employee);
   const filename = `${employee.slug}.vcf`;
 
   return new NextResponse(vcf, {

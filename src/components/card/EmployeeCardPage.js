@@ -21,7 +21,12 @@ function formatPhoneDisplay(phone) {
   return phone.trim();
 }
 
-function EmployeeCardHero({ employee, photoUrl, location }) {
+function formatWebsiteDisplay(url) {
+  if (!url || typeof url !== "string") return "";
+  return url.replace(/^https?:\/\//i, "").replace(/\/$/, "");
+}
+
+function EmployeeCardHero({ employee, photoUrl }) {
   return (
     <section className="relative overflow-hidden px-5 pb-8 pt-7 sm:px-7 sm:pb-10 sm:pt-9">
       <div
@@ -71,7 +76,7 @@ function EmployeeCardHero({ employee, photoUrl, location }) {
                     alt={BRAND.name}
                     width={320}
                     height={320}
-                    className="h-[7.25rem] w-[7.25rem] scale-[1.3] object-contain opacity-95 sm:h-[8rem] sm:w-[8rem]"
+                    className="h-[7.25rem] w-[7.25rem] scale-[1.08] object-contain opacity-95 sm:h-[8rem] sm:w-[8rem] sm:scale-[1.1]"
                     priority
                   />
                 </div>
@@ -89,9 +94,6 @@ function EmployeeCardHero({ employee, photoUrl, location }) {
           <p className="mt-2.5 text-[12px] font-semibold tracking-[0.18em] uppercase text-gold/90 sm:text-[13px]">
             {employee.job_title}
           </p>
-        ) : null}
-        {location ? (
-          <p className="mt-2 text-[13px] font-medium text-foreground/55 sm:text-sm">{location}</p>
         ) : null}
         <p className="mt-3 text-[11px] font-medium tracking-[0.14em] text-muted/80">{BRAND.tagline}</p>
       </div>
@@ -156,6 +158,8 @@ export function EmployeeCardPage({ employee }) {
   const social = employee?.social_links && typeof employee.social_links === "object" ? employee.social_links : {};
   const website = typeof social.website === "string" ? social.website.trim() : "";
   const instagram = typeof social.instagram === "string" ? social.instagram.trim() : "";
+  const personalInstagram =
+    typeof social.personal_instagram === "string" ? social.personal_instagram.trim() : "";
   const googleReviews = typeof social.google_reviews === "string" ? social.google_reviews.trim() : "";
 
   const officeTel = employee?.office_phone?.trim() || "";
@@ -182,10 +186,49 @@ export function EmployeeCardPage({ employee }) {
               "shadow-[0_32px_90px_-48px_rgba(0,0,0,0.95)]",
             )}
           >
-            <EmployeeCardHero employee={employee} photoUrl={photoUrl} location={location} />
+            <EmployeeCardHero employee={employee} photoUrl={photoUrl} />
 
-            {employee?.slug ? (
-              <div className="border-t border-white/8 px-4 py-5 sm:px-5">
+            <div className="space-y-2.5 border-t border-white/8 px-4 py-5 sm:px-5">
+              <ContactRow
+                label="Business"
+                value={formatPhoneDisplay(officeTel)}
+                href={officeTel ? `tel:${officeTel}` : null}
+              />
+              <ContactRow
+                label="Personal"
+                value={formatPhoneDisplay(directTel)}
+                href={directTel ? `tel:${directTel}` : null}
+              />
+              <ContactRow label="Email" value={email} href={email ? `mailto:${email}` : null} />
+              <ContactRow
+                label="Website"
+                value={formatWebsiteDisplay(website)}
+                href={website || null}
+                external
+              />
+              <ContactRow label="Location" value={location} />
+              <ContactRow
+                label="Business Instagram"
+                value={formatWebsiteDisplay(instagram)}
+                href={instagram || null}
+                external
+              />
+              <ContactRow
+                label="Personal Instagram"
+                value={formatWebsiteDisplay(personalInstagram)}
+                href={personalInstagram || null}
+                external
+              />
+              <ContactRow
+                label="Google Reviews"
+                value={formatWebsiteDisplay(googleReviews)}
+                href={googleReviews || null}
+                external
+              />
+            </div>
+
+            <div className="border-t border-white/8 px-4 py-5 sm:px-5">
+              {employee?.slug ? (
                 <Button
                   href={`/api/card/${employee.slug}/vcf`}
                   download={`${employee.slug}.vcf`}
@@ -193,23 +236,6 @@ export function EmployeeCardPage({ employee }) {
                 >
                   Save Contact
                 </Button>
-              </div>
-            ) : null}
-
-            <div className="space-y-2.5 border-t border-white/8 px-4 py-5 sm:px-5">
-              <ContactRow
-                label="Office"
-                value={formatPhoneDisplay(officeTel)}
-                href={officeTel ? `tel:${officeTel}` : null}
-              />
-              <ContactRow
-                label="Direct"
-                value={formatPhoneDisplay(directTel)}
-                href={directTel ? `tel:${directTel}` : null}
-              />
-              <ContactRow label="Email" value={email} href={email ? `mailto:${email}` : null} />
-              {!officeTel && !directTel && !email && location ? (
-                <ContactRow label="Location" value={location} />
               ) : null}
             </div>
 
@@ -227,7 +253,10 @@ export function EmployeeCardPage({ employee }) {
                 Visit Website
               </ActionButton>
               <ActionButton href={instagram || null} external>
-                Instagram
+                Business Instagram
+              </ActionButton>
+              <ActionButton href={personalInstagram || null} external>
+                Personal Instagram
               </ActionButton>
               <ActionButton href={googleReviews || null} external>
                 Google Reviews

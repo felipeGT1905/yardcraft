@@ -31,6 +31,20 @@ function pushLine(lines, name, value) {
   lines.push(foldVCardLine(`${name}:${text}`));
 }
 
+/** Apple Contacts reads X-ABLabel on grouped items for custom field names. */
+function pushLabeledItem(lines, itemKey, property, value, label) {
+  if (value == null || value === "") return;
+  const text = escapeVCardText(value);
+  lines.push(foldVCardLine(`${itemKey}.${property}:${text}`));
+  pushLine(lines, `${itemKey}.X-ABLabel`, label);
+}
+
+function pushLabeledItemRaw(lines, itemKey, property, rawValue, label) {
+  if (rawValue == null || rawValue === "") return;
+  lines.push(foldVCardLine(`${itemKey}.${property}:${rawValue}`));
+  pushLine(lines, `${itemKey}.X-ABLabel`, label);
+}
+
 function parseStructuredName(displayName) {
   const parts = String(displayName || "")
     .trim()
@@ -53,77 +67,83 @@ function parseLocationAdr(location) {
   if (commaParts.length >= 2) {
     const region = commaParts[commaParts.length - 1];
     const locality = commaParts.slice(0, -1).join(", ");
-    return { locality, region };
+    return `;;;${escapeVCardText(locality)};${escapeVCardText(region)};;`;
   }
 
-  return { locality: raw, region: "" };
-}
-
-function buildBriefNote(website) {
-  return website
-    ? `${BRAND.name} | ${BRAND.tagline} - ${website}`
-    : `${BRAND.name} | ${BRAND.tagline}`;
-}
-
-function pushPhotoLine(lines, photo) {
-  const base64 = String(photo?.base64 || "").trim();
-  const type = String(photo?.type || "JPEG").trim().toUpperCase();
-  if (!base64) return;
-
-  lines.push(foldVCardLine(`PHOTO;ENCODING=b;TYPE=${type}:${base64}`));
+  return `;;;${escapeVCardText(raw)};;;`;
 }
 
 /** Build a vCard 3.0 document for a published employee record. */
-export function buildEmployeeVCard(employee, photo = null) {
+export function buildEmployeeVCard(employee) {
   const displayName = String(employee?.display_name || "").trim();
   const { family, given } = parseStructuredName(displayName);
   const social =
     employee?.social_links && typeof employee.social_links === "object" ? employee.social_links : {};
   const website = typeof social.website === "string" ? social.website.trim() : "";
+  const instagram = typeof social.instagram === "string" ? social.instagram.trim() : "";
+  const personalInstagram =
+    typeof social.personal_instagram === "string" ? social.personal_instagram.trim() : "";
+  const googleReviews = typeof social.google_reviews === "string" ? social.google_reviews.trim() : "";
   const officePhone = String(employee?.office_phone || "").trim();
   const directPhone = String(employee?.direct_phone || "").trim();
   const email = String(employee?.email || "").trim();
   const location = String(employee?.location || "").trim();
+  const notes = String(employee?.notes || "").trim();
   const title = String(employee?.job_title || "").trim();
-  const briefNote = buildBriefNote(website);
 
   const lines = ["BEGIN:VCARD", "VERSION:3.0"];
 
   if (displayName) pushLine(lines, "FN", displayName);
   lines.push(
-    foldVCardLine(`N:${escapeVCardText(family)};${escapeVCardText(given)};;;`),
+    foldVCardLine(
+      `N:${escapeVCardText(family)};${escapeVCardText(given)};;;`,
+    ),
   );
-
-  pushPhotoLine(lines, photo);
 
   pushLine(lines, "ORG", BRAND.name);
   pushLine(lines, "TITLE", title);
 
+  let itemIndex = 1;
   if (officePhone) {
-    lines.push(foldVCardLine(`TEL;TYPE=WORK,VOICE:${escapeVCardText(officePhone)}`));
+    pushLabeledItem(lines, `item${itemIndex}`, "TEL;TYPE=VOICE", officePhone, "Business");
+    itemIndex += 1;
   }
   if (directPhone) {
-    lines.push(foldVCardLine(`TEL;TYPE=CELL,VOICE:${escapeVCardText(directPhone)}`));
+    pushLabeledItem(lines, `item${itemIndex}`, "TEL;TYPE=VOICE", directPhone, "Personal");
+    itemIndex += 1;
   }
-
   if (email) {
-    lines.push(foldVCardLine(`EMAIL;TYPE=INTERNET,WORK:${escapeVCardText(email)}`));
+    pushLabeledItem(lines, `item${itemIndex}`, "EMAIL;TYPE=INTERNET", email, "Email");
+    itemIndex += 1;
+  }
+  if (website) {
+    pushLabeledItem(lines, `item${itemIndex}`, "URL", website, "Website");
+    itemIndex += 1;
   }
 
   const adr = parseLocationAdr(location);
   if (adr) {
-    lines.push(
-      foldVCardLine(
-        `ADR;TYPE=WORK:;;${escapeVCardText(adr.locality)};${escapeVCardText(adr.region)};;`,
-      ),
-    );
+    pushLabeledItemRaw(lines, `item${itemIndex}`, "ADR", adr, "Location");
+    itemIndex += 1;
   }
 
-  if (website) {
-    pushLine(lines, "URL", website);
+  if (instagram) {
+    pushLabeledItem(lines, `item${itemIndex}`, "URL", instagram, "Business Instagram");
+    itemIndex += 1;
   }
 
-  pushLine(lines, "NOTE", briefNote);
+  if (personalInstagram) {
+    pushLabeledItem(lines, `item${itemIndex}`, "URL", personalInstagram, "Personal Instagram");
+    itemIndex += 1;
+  }
+
+  if (googleReviews) {
+    pushLabeledItem(lines, `item${itemIndex}`, "URL", googleReviews, "Google Reviews");
+  }
+
+  if (notes) {
+    pushLine(lines, "NOTE", notes);
+  }
 
   lines.push("END:VCARD");
   return `${lines.join("\r\n")}\r\n`;
