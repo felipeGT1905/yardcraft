@@ -184,6 +184,18 @@ export function EmployeeCardPage({ employee }) {
           >
             <EmployeeCardHero employee={employee} photoUrl={photoUrl} location={location} />
 
+            {employee?.slug ? (
+              <div className="border-t border-white/8 px-4 py-5 sm:px-5">
+                <Button
+                  href={`/api/card/${employee.slug}/vcf`}
+                  download={`${employee.slug}.vcf`}
+                  className="w-full justify-center py-4 text-[14px] sm:text-[13px]"
+                >
+                  Save Contact
+                </Button>
+              </div>
+            ) : null}
+
             <div className="space-y-2.5 border-t border-white/8 px-4 py-5 sm:px-5">
               <ContactRow
                 label="Office"
@@ -198,18 +210,6 @@ export function EmployeeCardPage({ employee }) {
               <ContactRow label="Email" value={email} href={email ? `mailto:${email}` : null} />
               {!officeTel && !directTel && !email && location ? (
                 <ContactRow label="Location" value={location} />
-              ) : null}
-            </div>
-
-            <div className="border-t border-white/8 px-4 py-5 sm:px-5">
-              {employee?.slug ? (
-                <Button
-                  href={`/api/card/${employee.slug}/vcf`}
-                  download={`${employee.slug}.vcf`}
-                  className="w-full justify-center py-4 text-[14px] sm:text-[13px]"
-                >
-                  Save Contact
-                </Button>
               ) : null}
             </div>
 

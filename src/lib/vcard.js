@@ -70,8 +70,11 @@ export function buildEmployeeVCard(employee) {
   const directPhone = String(employee?.direct_phone || "").trim();
   const email = String(employee?.email || "").trim();
   const location = String(employee?.location || "").trim();
-  const notes = String(employee?.notes || "").trim();
   const title = String(employee?.job_title || "").trim();
+  // Keep NOTE to one line so iOS contact import shows add/save actions without scrolling.
+  const briefNote = website
+    ? `${BRAND.name} | ${BRAND.tagline} — ${website}`
+    : `${BRAND.name} | ${BRAND.tagline}`;
 
   const lines = ["BEGIN:VCARD", "VERSION:3.0"];
 
@@ -105,9 +108,7 @@ export function buildEmployeeVCard(employee) {
     pushLine(lines, "URL", website);
   }
 
-  if (notes) {
-    pushLine(lines, "NOTE", notes);
-  }
+  pushLine(lines, "NOTE", briefNote);
 
   lines.push("END:VCARD");
   return `${lines.join("\r\n")}\r\n`;

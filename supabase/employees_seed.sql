@@ -40,8 +40,8 @@ rows as (
   from (
     values
       ('felipe', 'Felipe Gomez', 'Growth Director', '+15717740966', 'felipe@yardcraft.us', '/images/employees/felipe.png'),
-      ('javier', 'Javier Perez', 'Project Director', '+17033039064', 'javier@yardcraft.us', null),
-      ('nicolas', 'Nicolas Gomez', 'Project Director', '+15715764992', 'support@yardcraft.us', '/images/employees/nicolas.png'),
+      ('javier', 'Javier Perez', 'Project Director', '+17033039064', 'javier@yardcraft.us', '/images/employees/javier.png'),
+      ('nicolas', 'Nicolas Gomez', 'Managing Partner', '+15715764992', 'support@yardcraft.us', '/images/employees/nicolas.png'),
       ('ricardo', 'Ricardo Perez', 'Relationship Manager', '+15712439764', 'support@yardcraft.us', null),
       ('steven', 'Steven Perez', 'Strategic Operations', '+15714381525', 'support@yardcraft.us', '/images/employees/steven.png')
   ) as v(slug, display_name, job_title, direct_phone, email, photo_url)
