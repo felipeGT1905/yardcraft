@@ -13,6 +13,19 @@ const EXTENSION_TO_VCARD_TYPE = {
 const VCARD_PHOTO_SIZE = 256;
 const VCARD_JPEG_QUALITY = 82;
 
+function resolveAssetOrigin(origin) {
+  const fromRequest = String(origin || "").trim().replace(/\/$/, "");
+  if (fromRequest) return fromRequest;
+
+  const fromEnv = getSiteUrl();
+  if (fromEnv && !fromEnv.includes("localhost")) return fromEnv;
+
+  const vercel = process.env.VERCEL_URL?.trim();
+  if (vercel) return `https://${vercel.replace(/^https?:\/\//, "")}`;
+
+  return fromEnv || "";
+}
+
 function vcardTypeFromPath(filePath) {
   const ext = path.extname(filePath).slice(1).toLowerCase();
   return EXTENSION_TO_VCARD_TYPE[ext] || null;
@@ -33,11 +46,14 @@ function publicFilePathFromUrl(photoUrl) {
   return filePath;
 }
 
-function toAbsolutePhotoUrl(photoUrl) {
+function toAbsolutePhotoUrl(photoUrl, origin) {
   const trimmed = String(photoUrl || "").trim();
   if (!trimmed) return null;
   if (/^https?:\/\//i.test(trimmed)) return trimmed;
-  if (trimmed.startsWith("/")) return `${getSiteUrl()}${trimmed}`;
+
+  const base = resolveAssetOrigin(origin);
+  if (trimmed.startsWith("/") && base) return `${base}${trimmed}`;
+
   return null;
 }
 
@@ -59,68 +75,72 @@ async function prepareVCardPhoto(buffer) {
   }
 }
 
-async function loadPhotoFromFile(filePath) {
-  const type = vcardTypeFromPath(filePath);
-  if (!type) return null;
+function bufferToVCardPhoto(buffer, filePathOrUrl) {
+  if (!buffer?.length) return null;
 
+  const type = vcardTypeFromPath(filePathOrUrl) || "JPEG";
+  return { type, base64: buffer.toString("base64") };
+}
+
+async function loadPhotoFromFile(filePath) {
   try {
     const buffer = await readFile(filePath);
     const prepared = await prepareVCardPhoto(buffer);
-    if (prepared) return prepared;
+    if (prepared?.base64) return prepared;
 
-    if (!buffer.length) return null;
-    return { type, base64: buffer.toString("base64") };
+    return bufferToVCardPhoto(buffer, filePath);
   } catch {
     return null;
   }
 }
 
-async function loadPhotoFromUrl(photoUrl) {
-  const absoluteUrl = toAbsolutePhotoUrl(photoUrl);
-  if (!absoluteUrl) return null;
-
+async function loadPhotoFromAbsoluteUrl(absoluteUrl) {
   try {
-    const response = await fetch(absoluteUrl);
+    const response = await fetch(absoluteUrl, { cache: "force-cache" });
     if (!response.ok) return null;
 
     const buffer = Buffer.from(await response.arrayBuffer());
     const prepared = await prepareVCardPhoto(buffer);
-    if (prepared) return prepared;
+    if (prepared?.base64) return prepared;
 
-    if (!buffer.length) return null;
-
-    let type = vcardTypeFromPath(new URL(absoluteUrl).pathname);
-    if (!type) {
-      const contentType = response.headers.get("content-type") || "";
-      if (contentType.includes("jpeg") || contentType.includes("jpg")) type = "JPEG";
-      else if (contentType.includes("png")) type = "PNG";
-      else if (contentType.includes("gif")) type = "GIF";
+    const typeFromPath = vcardTypeFromPath(new URL(absoluteUrl).pathname);
+    if (typeFromPath) {
+      return bufferToVCardPhoto(buffer, absoluteUrl);
     }
 
-    if (!type) return null;
-    return { type, base64: buffer.toString("base64") };
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.includes("jpeg") || contentType.includes("jpg")) {
+      return { type: "JPEG", base64: buffer.toString("base64") };
+    }
+    if (contentType.includes("png")) {
+      return { type: "PNG", base64: buffer.toString("base64") };
+    }
+
+    return null;
   } catch {
     return null;
   }
 }
 
-/** Load employee avatar bytes for embedding in a vCard PHOTO field. */
-export async function loadEmployeeVCardPhoto(photoUrl) {
+/**
+ * Load employee avatar as embedded base64 for vCard PHOTO.
+ * Never returns a URL-only photo — URI references display as text on Android.
+ */
+export async function loadEmployeeVCardPhoto(photoUrl, { origin } = {}) {
   const trimmed = String(photoUrl || "").trim();
   if (!trimmed) return null;
-
-  const uri = toAbsolutePhotoUrl(trimmed);
 
   const localPath = publicFilePathFromUrl(trimmed);
   if (localPath) {
     const localPhoto = await loadPhotoFromFile(localPath);
-    if (localPhoto) return { ...localPhoto, uri: uri || undefined };
+    if (localPhoto?.base64) return localPhoto;
   }
 
-  const remotePhoto = await loadPhotoFromUrl(trimmed);
-  if (remotePhoto) return { ...remotePhoto, uri: uri || undefined };
-
-  if (uri) return { type: "JPEG", base64: "", uri };
+  const absoluteUrl = toAbsolutePhotoUrl(trimmed, origin);
+  if (absoluteUrl) {
+    const remotePhoto = await loadPhotoFromAbsoluteUrl(absoluteUrl);
+    if (remotePhoto?.base64) return remotePhoto;
+  }
 
   return null;
 }

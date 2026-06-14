@@ -67,17 +67,10 @@ function buildBriefNote(website) {
 
 function pushPhotoLine(lines, photo) {
   const base64 = String(photo?.base64 || "").trim();
-  const uri = String(photo?.uri || "").trim();
   const type = String(photo?.type || "JPEG").trim().toUpperCase();
+  if (!base64) return;
 
-  if (base64) {
-    lines.push(foldVCardLine(`PHOTO;ENCODING=b;TYPE=${type}:${base64}`));
-    return;
-  }
-
-  if (uri) {
-    lines.push(foldVCardLine(`PHOTO;VALUE=URI:${uri}`));
-  }
+  lines.push(foldVCardLine(`PHOTO;ENCODING=b;TYPE=${type}:${base64}`));
 }
 
 /** Build a vCard 3.0 document for a published employee record. */
