@@ -109,11 +109,18 @@ export async function loadEmployeeVCardPhoto(photoUrl) {
   const trimmed = String(photoUrl || "").trim();
   if (!trimmed) return null;
 
+  const uri = toAbsolutePhotoUrl(trimmed);
+
   const localPath = publicFilePathFromUrl(trimmed);
   if (localPath) {
     const localPhoto = await loadPhotoFromFile(localPath);
-    if (localPhoto) return localPhoto;
+    if (localPhoto) return { ...localPhoto, uri: uri || undefined };
   }
 
-  return loadPhotoFromUrl(trimmed);
+  const remotePhoto = await loadPhotoFromUrl(trimmed);
+  if (remotePhoto) return { ...remotePhoto, uri: uri || undefined };
+
+  if (uri) return { type: "JPEG", base64: "", uri };
+
+  return null;
 }

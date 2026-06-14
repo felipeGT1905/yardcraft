@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 
 import { getEmployeeBySlug } from "@/lib/employees";
 import { isValidEmployeeSlug } from "@/lib/employeeSlug";
-import { buildEmployeeVCard, isAndroidUserAgent } from "@/lib/vcard";
+import { buildEmployeeVCard } from "@/lib/vcard";
 import { loadEmployeeVCardPhoto } from "@/lib/vcardPhoto";
 
-export async function GET(request, { params }) {
+export async function GET(_request, { params }) {
   const { slug } = await params;
   if (!isValidEmployeeSlug(slug)) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
@@ -16,16 +16,14 @@ export async function GET(request, { params }) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 
-  const userAgent = request.headers.get("user-agent") || "";
-  const android = isAndroidUserAgent(userAgent);
   const photo = await loadEmployeeVCardPhoto(employee.photo_url);
-  const vcf = buildEmployeeVCard(employee, photo, { android });
+  const vcf = buildEmployeeVCard(employee, photo);
   const filename = `${employee.slug}.vcf`;
 
   return new NextResponse(vcf, {
     status: 200,
     headers: {
-      "Content-Type": android ? "text/x-vcard; charset=utf-8" : "text/vcard; charset=utf-8",
+      "Content-Type": "text/vcard; charset=utf-8",
       "Content-Disposition": `attachment; filename="${filename}"`,
     },
   });
