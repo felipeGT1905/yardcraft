@@ -45,6 +45,14 @@ function parseStructuredName(displayName) {
   };
 }
 
+function pushPhotoLine(lines, photo) {
+  const base64 = String(photo?.base64 || "").trim();
+  const type = String(photo?.type || "").trim();
+  if (!base64 || !type) return;
+
+  lines.push(foldVCardLine(`PHOTO;ENCODING=b;TYPE=${type}:${base64}`));
+}
+
 function parseLocationAdr(location) {
   const raw = String(location || "").trim();
   if (!raw) return null;
@@ -60,7 +68,7 @@ function parseLocationAdr(location) {
 }
 
 /** Build a vCard 3.0 document for a published employee record. */
-export function buildEmployeeVCard(employee) {
+export function buildEmployeeVCard(employee, photo = null) {
   const displayName = String(employee?.display_name || "").trim();
   const { family, given } = parseStructuredName(displayName);
   const social =
@@ -84,6 +92,8 @@ export function buildEmployeeVCard(employee) {
       `N:${escapeVCardText(family)};${escapeVCardText(given)};;;`,
     ),
   );
+
+  pushPhotoLine(lines, photo);
 
   pushLine(lines, "ORG", BRAND.name);
   pushLine(lines, "TITLE", title);

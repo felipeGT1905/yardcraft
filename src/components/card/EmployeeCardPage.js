@@ -71,7 +71,7 @@ function EmployeeCardHero({ employee, photoUrl, location }) {
                     alt={BRAND.name}
                     width={320}
                     height={320}
-                    className="h-[7.25rem] w-[7.25rem] scale-[1.08] object-contain opacity-95 sm:h-[8rem] sm:w-[8rem] sm:scale-[1.1]"
+                    className="h-[7.25rem] w-[7.25rem] scale-[1.3] object-contain opacity-95 sm:h-[8rem] sm:w-[8rem]"
                     priority
                   />
                 </div>

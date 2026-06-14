@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getEmployeeBySlug } from "@/lib/employees";
 import { isValidEmployeeSlug } from "@/lib/employeeSlug";
 import { buildEmployeeVCard } from "@/lib/vcard";
+import { loadEmployeeVCardPhoto } from "@/lib/vcardPhoto";
 
 export async function GET(_request, { params }) {
   const { slug } = await params;
@@ -15,7 +16,8 @@ export async function GET(_request, { params }) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 
-  const vcf = buildEmployeeVCard(employee);
+  const photo = await loadEmployeeVCardPhoto(employee.photo_url);
+  const vcf = buildEmployeeVCard(employee, photo);
   const filename = `${employee.slug}.vcf`;
 
   return new NextResponse(vcf, {
